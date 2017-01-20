@@ -26,23 +26,24 @@ func savePdf(url string) {
 	if e != nil {
 		fmt.Println("Error while downloading:", url)
 	}
+	defer response.Body.Close()
 
 	temp := strings.Split(url, "/")
 	fileName := temp[len(temp)-1]
-	fmt.Println(fileName)
-	defer response.Body.Close()
+
 	dir := os.Getenv("TNPSC_DIR")
 	file, err := os.Create(dir + fileName)
 	if err != nil {
 		log.Fatal("Error while creating file ", fileName, " ", err)
 	}
-	_, err = io.Copy(file, response.Body)
 
+	_, err = io.Copy(file, response.Body)
 	if err != nil {
 		log.Fatal("Error while downloading file ", fileName, " ", err)
 	}
 
 	file.Close()
+
 	fmt.Println("File downloaded: ==>", fileName)
 }
 
