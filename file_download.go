@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -24,7 +25,7 @@ func getHref(t html.Token) (ok bool, href string) {
 func savePdf(url string) {
 	response, e := http.Get(url)
 	if e != nil {
-		fmt.Println("Error while downloading:", url)
+		fmt.Println("Error while downloading ==>", url)
 	}
 	defer response.Body.Close()
 
@@ -34,21 +35,24 @@ func savePdf(url string) {
 	dir := os.Getenv("TNPSC_DIR")
 	file, err := os.Create(dir + fileName)
 	if err != nil {
-		log.Fatal("Error while creating file ", fileName, " ", err)
+		log.Fatal("Error while creating file ==>", fileName, " ", err)
 	}
 
 	_, err = io.Copy(file, response.Body)
 	if err != nil {
-		log.Fatal("Error while downloading file ", fileName, " ", err)
+		log.Fatal("Error while downloading file ==>", fileName, " ", err)
 	}
 
 	file.Close()
 
-	fmt.Println("File downloaded: ==>", fileName)
+	fmt.Println("File downloaded ==>", fileName)
 }
 
 func main() {
-	url := "http://www.tnpscportal.in/2014/06/tnpsc-current-affairs-in-tamil-june-2014.html"
+	var url, fileType string
+	flag.StringVar(&url, "url", "url", "URL to crawl")
+	flag.StringVar(&fileType, "ftype", "pdf", "File type to download")
+	flag.Parse()
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -77,7 +81,7 @@ func main() {
 				continue
 			}
 
-			if strings.Index(url, "pdf") > -1 {
+			if strings.Index(url, fileType) > -1 {
 				go savePdf(url)
 			}
 
