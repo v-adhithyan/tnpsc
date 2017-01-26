@@ -85,7 +85,7 @@ func main() {
 			}
 
 			if !strings.Contains(downloadURL, "www") {
-				strippedURL := strings.Replace(downloadURL, "http://", "", -1)
+				strippedURL := strings.Replace(url, "http://", "", -1)
 				baseURL := strings.Split(strippedURL, "/")[0]
 				downloadURL = baseURL + downloadURL
 				fmt.Println("downloadURL ==>", downloadURL)
