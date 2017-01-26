@@ -54,6 +54,9 @@ func main() {
 	flag.StringVar(&fileType, "ftype", "pdf", "File type to download")
 	flag.Parse()
 
+	//remaining := make(chan int)
+	//done := make(chan bool, false)
+
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Println("ERROR: ", err)
@@ -76,15 +79,25 @@ func main() {
 				continue
 			}
 
-			ok, url := getHref(token)
+			ok, downloadURL := getHref(token)
 			if !ok {
 				continue
 			}
 
-			if strings.Index(url, fileType) > -1 {
-				go savePdf(url)
+			if !strings.Contains(downloadURL, "www") {
+				strippedURL := strings.Replace(downloadURL, "http://", "", -1)
+				baseURL := strings.Split(strippedURL, "/")[0]
+				downloadURL = baseURL + downloadURL
+				fmt.Println("downloadURL ==>", downloadURL)
 			}
 
+			if strings.Index(downloadURL, fileType) > -1 {
+				go savePdf(downloadURL)
+			}
+			/*case token == html.ErrorToken:
+			if done {
+				return
+			}*/
 		}
 	}
 }
